@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nacim & Hassina Pixel Love</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: url('https://i.ibb.co/NgBv7ML5/2025-07-09-16-45-35-Death-Generator-Animation.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Press Start 2P', monospace;
+      color: white;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    #dialogueContainer {
+      background: rgba(0, 0, 0, 0.8);
+      border: 3px solid #fff;
+      border-radius: 15px;
+      padding: 20px;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 0 10px #00ffcc;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: #222;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: left;
+      margin-top: 10px;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 30px;
+      width: 0;
+      height: 0;
+      border: 15px solid transparent;
+      border-top-color: #222;
+    }
+
+    #speakerName {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      position: absolute;
+      top: -25px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+    .nacim {
+      text-align: right;
+    }
+
+    .nacim #speakerName {
+      color: #00ffff;
+      right: 10px;
+    }
+
+    .hassina {
+      text-align: left;
+    }
+
+    .hassina #speakerName {
+      color: #ff99ff;
+      left: 10px;
+    }
+
+    .nacim .speech-bubble {
+      background: #003f3f;
+    }
+
+    .hassina .speech-bubble {
+      background: #3f003f;
+    }
+
+    #controls, #finalQuestion {
+      text-align: center;
+    }
+
+    button {
+      background-color: black;
+      color: #00ffcc;
+      font-family: 'Press Start 2P', monospace;
+      border: 2px solid #00ffcc;
+      padding: 10px 15px;
+      margin: 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #00ffcc;
+      color: black;
+    }
+
+    button:disabled {
+      opacity: 0.3;
+    }
+
+    @media screen and (max-width: 768px) {
+      .speech-bubble {
+        font-size: 0.7rem;
+        padding: 15px;
+      }
+      #speakerName {
+        font-size: 0.9rem;
+      }
+      button {
+        font-size: 0.6rem;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" autoplay loop>
+    <source src="http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <audio id="popSound">
+    <source src="https://cdn.pixabay.com/download/audio/2022/10/16/audio_16849cbdd2.mp3?filename=pop-94319.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="dialogueContainer" class="nacim">
+    <div id="speakerName">Nacim</div>
+    <div class="speech-bubble" id="dialogueTextContent"></div>
+  </div>
+
+  <div id="controls">
+    <button id="prevBtn">◀ Précédent</button>
+    <button id="nextBtn">▶ Suivant</button>
+    <button id="replayBtn">🔁 Rejouer</button>
+    <button id="musicBtn">🔊 Musique On</button>
+  </div>
+
+  <div id="finalQuestion" style="display: none; margin-top: 40px;">
+    <p style="font-size: 1rem; color: #fff;">Dis-moi à la3mar... serais-tu la mère de notre enfant ? 💍</p>
+    <button onclick="sendSMS(true)">💖 Oui</button>
+    <button onclick="sendSMS(false)">💔 Non</button>
+  </div>
+
+  <canvas id="fireworksCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;"></canvas>
+
+  <script>
+    const lines = [
+      { speaker: "Nacim", text: "Tes yeux, Hassina... ils ont activé un protocole inconnu dans mon cœur. Probablement une mise à jour romantique non répertoriée." },
+      { speaker: "Hassina", text: "Et toi, tu viens de hacker mes émotions sans même passer par un pare-feu. T’es dangereux, capitaine." },
+      { speaker: "Nacim", text: "Je suis tombé dans ton regard comme dans une potion magique... et maintenant, j’ai des papillons quantiques dans le ventre." },
+      { speaker: "Hassina", text: "Tu joues avec les lois de la gravité... Mon cœur flotte quand tu me parles comme ça. On appelle ça l’effet Nacim." },
+      { speaker: "Nacim", text: "Je suis prêt à me perdre dans ta galaxie. Plus besoin de GPS, juste ton sourire pour me guider." },
+      { speaker: "Hassina", text: "Alors tiens-toi prêt… Mon amour, c’est comme une comète : intense, rare, mais je choisis de m’écraser droit dans toi." },
+      { speaker: "Nacim", text: "Est-ce que tu viens d’inverser mes circuits cardiaques ? Mon processeur redémarre à chaque fois que je pense à toi." },
+      { speaker: "Hassina", text: "C’est normal. T’es peut-être un bug dans mon système... mais c’est le seul que je veux garder pour toujours." },
+      { speaker: "Nacim", text: "Aucun algorithme ne peut expliquer ce que je ressens. C’est pas du code, c’est du chaos contrôlé... version Hassina." },
+      { speaker: "Hassina", text: "L’amour, c’est la plus vieille des technologies. Et toi, t’es mon mot de passe universel." },
+      { speaker: "Nacim", text: "Alors écoute-moi, mon étoile : J’ai traversé l’espace, les nébuleuses, les temps, Mais c’est en mai que tout a vraiment commencé. Une live, un regard, et l’univers a flanché, Grenoble fut notre point d’ancrage charmant. Depuis, ton rire résonne comme une comète… Et mon cœur, Hassina, s’illumine quand tu l’mettes. Je t’aime au-delà du temps et des systèmes… Et tout s’achève dans un seul mot : hemlaghkem 💫" }
+    ];
+
+    const speakerNameElem = document.getElementById("speakerName");
+    const dialogueTextElem = document.getElementById("dialogueTextContent");
+    const container = document.getElementById("dialogueContainer");
+    const finalQuestion = document.getElementById("finalQuestion");
+    const popSound = document.getElementById("popSound");
+    const bgMusic = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicBtn");
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const replayBtn = document.getElementById("replayBtn");
+
+    let currentIndex = 0;
+    let charIndex = 0;
+    let typingTimeout;
+    let isMusicPlaying = true;
+
+    function playPop() {
+      popSound.currentTime = 0;
+      popSound.play();
+    }
+
+    function toggleMusic() {
+      if (isMusicPlaying) {
+        bgMusic.pause();
+        musicBtn.textContent = "🔇 Musique Off";
+      } else {
+        bgMusic.play();
+        musicBtn.textContent = "🔊 Musique On";
+      }
+      isMusicPlaying = !isMusicPlaying;
+      playPop();
+    }
+
+    musicBtn.addEventListener("click", toggleMusic);
+
+    function typeLine(line) {
+      clearTimeout(typingTimeout);
+      speakerNameElem.textContent = line.speaker;
+      container.className = line.speaker.toLowerCase();
+      dialogueTextElem.textContent = line.text.substring(0, charIndex);
+
+      if (charIndex < line.text.length) {
+        charIndex++;
+        typingTimeout = setTimeout(() => typeLine(line), 25);
+      } else {
+        updateButtons();
+      }
+    }
+
+    function showLine(index) {
+      finalQuestion.style.display = 'none';
+      currentIndex = index;
+      charIndex = 0;
+      dialogueTextElem.textContent = "";
+      typeLine(lines[currentIndex]);
+    }
+
+    function updateButtons() {
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === lines.length - 1;
+      if (currentIndex === lines.length - 1) {
+        finalQuestion.style.display = 'block';
+      }
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        playPop();
+        showLine(currentIndex - 1);
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < lines.length - 1) {
+        playPop();
+        showLine(currentIndex + 1);
+      }
+    });
+
+    replayBtn.addEventListener("click", () => {
+      playPop();
+      showLine(0);
+    });
+
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    let fireworks = [];
+
+    function createFirework(x, y) {
+      const colors = ['#ff4dff', '#00ffff', '#ffff66', '#ff9966', '#ccff66'];
+      for (let i = 0; i < 30; i++) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 4 + 1;
+        fireworks.push({
+          x, y,
+          dx: Math.cos(angle) * speed,
+          dy: Math.sin(angle) * speed,
+          life: 100,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+    }
+
+    function animateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach((p, i) => {
+        p.x += p.dx;
+        p.y += p.dy;
+        p.dy += 0.05;
+        p.life--;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      fireworks = fireworks.filter(p => p.life > 0);
+      requestAnimationFrame(animateFireworks);
+    }
+
+    animateFireworks();
+
+    function sendSMS(isYes) {
+      if (isYes) {
+        createFirework(window.innerWidth / 2, window.innerHeight / 2);
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            createFirework(Math.random() * window.innerWidth, Math.random() * window.innerHeight);
+          }, i * 400);
+        }
+      }
+      const msg = isYes ? "oui akaghagh a yamcum" : "dans tes reve a wagi";
+      const tel = "+33642032100";
+      setTimeout(() => {
+        window.location.href = `sms:${tel}?body=${encodeURIComponent(msg)}`;
+      }, 2500);
+    }
+
+    showLine(0);
+  </script>
+</body>
+</html>
